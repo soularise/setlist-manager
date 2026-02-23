@@ -6,7 +6,7 @@ import SetlistCard from '@/components/setlists/SetlistCard'
 import SetlistForm from '@/components/setlists/SetlistForm'
 
 export default function Dashboard() {
-  const { setlists, loading, error, createSetlist, deleteSetlist } = useSetlists()
+  const { setlists, loading, error, createSetlist, deleteSetlist, duplicateSetlist } = useSetlists()
   const [showCreate, setShowCreate] = useState(false)
 
   if (loading) return <p className="py-12 text-center text-[var(--color-text-secondary)]">Loading…</p>
@@ -26,7 +26,7 @@ export default function Dashboard() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {setlists.map((sl) => (
-            <SetlistCard key={sl.id} setlist={sl} onDelete={deleteSetlist} />
+            <SetlistCard key={sl.id} setlist={sl} onDelete={deleteSetlist} onDuplicate={duplicateSetlist} />
           ))}
         </div>
       )}

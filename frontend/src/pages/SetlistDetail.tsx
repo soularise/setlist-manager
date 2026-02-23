@@ -15,14 +15,20 @@ import SongLibraryPanel from '@/components/setlists/SongLibraryPanel'
 
 function SetlistDetailContent({ id }: { id: string }) {
   const { songs: allSongs, loading: songsLoading } = useSongs()
-  const { setlist, songs, loading, error, addSong, removeSong, reorderSongs } = useSetlist(id)
+  const { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, updateSetlistName, removeSong, reorderSongs } = useSetlist(id)
 
   const sensors = useSensors(useSensor(PointerSensor))
-  const songIdsInSet = new Set(songs.map((s) => s.song_id))
+  const songIdsInSet = new Set(songs.map((s) => s.song_id).filter((id): id is string => id !== null))
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     const activeIdStr = active.id.toString()
+
+    if (activeIdStr === 'lib-break') {
+      if (!over) return
+      await addBreak().catch(() => {})
+      return
+    }
 
     if (activeIdStr.startsWith('lib-')) {
       if (!over) return
@@ -78,6 +84,8 @@ function SetlistDetailContent({ id }: { id: string }) {
               error={error}
               addSong={addSong}
               removeSong={removeSong}
+              updateBreakLabel={updateBreakLabel}
+              onUpdateName={updateSetlistName}
             />
           </div>
         </div>

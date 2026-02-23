@@ -11,12 +11,22 @@ class SetlistSongCreate(BaseModel):
     notes: Optional[str] = None
 
 
+class BreakCreate(BaseModel):
+    position: int
+    break_label: str = "Break"
+
+
+class BreakLabelUpdate(BaseModel):
+    break_label: str
+
+
 class SetlistSongResponse(BaseModel):
     id: str
     setlist_id: str
-    song_id: str
+    song_id: Optional[str] = None
     position: int
     notes: Optional[str] = None
+    break_label: Optional[str] = None
     song: Optional[SongResponse] = None
 
 

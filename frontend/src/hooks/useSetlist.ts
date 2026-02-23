@@ -66,5 +66,26 @@ export function useSetlist(setlistId: string) {
     }
   }
 
-  return { setlist, songs, loading, error, addSong, removeSong, reorderSongs }
+  const addBreak = async (label: string = 'Break') => {
+    const entry = await api.addBreakToSetlist(setlistId, {
+      position: songs.length,
+      break_label: label,
+    })
+    setSongs((prev) => [...prev, entry])
+    return entry
+  }
+
+  const updateBreakLabel = async (setlistSongId: string, label: string) => {
+    setSongs((prev) =>
+      prev.map((s) => (s.id === setlistSongId ? { ...s, break_label: label } : s)),
+    )
+    await api.updateBreakLabel(setlistId, setlistSongId, label)
+  }
+
+  const updateSetlistName = async (name: string) => {
+    const updated = await api.updateSetlist(setlistId, { name })
+    setSetlist(updated)
+  }
+
+  return { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, removeSong, reorderSongs, updateSetlistName }
 }

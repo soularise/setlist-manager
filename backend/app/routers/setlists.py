@@ -2,7 +2,13 @@ from fastapi import APIRouter, Depends, status
 
 from ..dependencies import AuthContext, get_auth
 from ..models.setlist import SetlistCreate, SetlistResponse, SetlistUpdate
-from ..models.setlist_song import ReorderRequest, SetlistSongCreate, SetlistSongResponse
+from ..models.setlist_song import (
+    BreakCreate,
+    BreakLabelUpdate,
+    ReorderRequest,
+    SetlistSongCreate,
+    SetlistSongResponse,
+)
 from ..services import setlist_service
 
 router = APIRouter(prefix="/api/setlists", tags=["setlists"])
@@ -33,6 +39,11 @@ def delete_setlist(setlist_id: str, auth: AuthContext = Depends(get_auth)):
     setlist_service.delete_setlist(setlist_id, auth.client)
 
 
+@router.post("/{setlist_id}/duplicate", response_model=SetlistResponse, status_code=status.HTTP_201_CREATED)
+def duplicate_setlist(setlist_id: str, auth: AuthContext = Depends(get_auth)):
+    return setlist_service.duplicate_setlist(setlist_id, auth.user_id, auth.client)
+
+
 @router.get("/{setlist_id}/songs", response_model=list[SetlistSongResponse])
 def list_setlist_songs(setlist_id: str, auth: AuthContext = Depends(get_auth)):
     return setlist_service.get_setlist_songs(setlist_id, auth.client)
@@ -45,6 +56,25 @@ def list_setlist_songs(setlist_id: str, auth: AuthContext = Depends(get_auth)):
 )
 def add_song(setlist_id: str, body: SetlistSongCreate, auth: AuthContext = Depends(get_auth)):
     return setlist_service.add_song_to_setlist(setlist_id, body, auth.client)
+
+
+@router.post(
+    "/{setlist_id}/breaks",
+    response_model=SetlistSongResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_break(setlist_id: str, body: BreakCreate, auth: AuthContext = Depends(get_auth)):
+    return setlist_service.add_break_to_setlist(setlist_id, body, auth.client)
+
+
+@router.patch("/{setlist_id}/songs/{setlist_song_id}/label", response_model=SetlistSongResponse)
+def update_break_label(
+    _setlist_id: str,
+    setlist_song_id: str,
+    body: BreakLabelUpdate,
+    auth: AuthContext = Depends(get_auth),
+):
+    return setlist_service.update_break_label(setlist_song_id, body.break_label, auth.client)
 
 
 @router.delete("/{setlist_id}/songs/{setlist_song_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,12 +1,15 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { SetlistSongWithSong } from '@/types'
+import type { Song, SetlistSongWithSong } from '@/types'
+
+// DraggableRow only receives song rows (never breaks), so song is guaranteed non-null
+type SongRow = SetlistSongWithSong & { song: Song }
 import { formatDuration } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 
 interface Props {
-  item: SetlistSongWithSong
+  item: SongRow
   onRemove: (setlistSongId: string) => void
 }
 

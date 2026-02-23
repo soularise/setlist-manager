@@ -17,13 +17,14 @@ export interface Setlist {
 export interface SetlistSong {
   id: string
   setlist_id: string
-  song_id: string
+  song_id: string | null  // null for break rows
   position: number
   notes?: string
+  break_label?: string
 }
 
 export interface SetlistSongWithSong extends SetlistSong {
-  song: Song
+  song: Song | null  // null for break rows
 }
 
 export interface Profile {

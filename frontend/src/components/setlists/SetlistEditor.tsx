@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable, useDndContext } from '@dnd-kit/core'
 import type { Setlist, SetlistSongWithSong, Song } from '@/types'
+
+type SongRow = SetlistSongWithSong & { song: Song }
 import { bpmRange, formatDuration } from '@/lib/utils'
 import Button from '@/components/ui/Button'
+import BreakRow from './BreakRow'
 import DraggableRow from './DraggableRow'
 
 interface Props {
@@ -14,6 +17,8 @@ interface Props {
   error: string | null
   addSong: (songId: string) => Promise<SetlistSongWithSong>
   removeSong: (id: string) => Promise<void>
+  updateBreakLabel: (id: string, label: string) => void
+  onUpdateName: (name: string) => Promise<void>
 }
 
 export default function SetlistEditor({
@@ -24,10 +29,15 @@ export default function SetlistEditor({
   error,
   addSong,
   removeSong,
+  updateBreakLabel,
+  onUpdateName,
 }: Props) {
   const [adding, setAdding] = useState(false)
   const [selectedSongId, setSelectedSongId] = useState('')
   const [addError, setAddError] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState(false)
+  const [nameValue, setNameValue] = useState('')
+  const nameInputRef = useRef<HTMLInputElement>(null)
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'setlist-container' })
   const { active } = useDndContext()
@@ -45,8 +55,9 @@ export default function SetlistEditor({
     }
   }
 
-  const totalDuration = songs.reduce((sum, s) => sum + (s.song.duration_seconds ?? 0), 0)
-  const bpms = songs.map((s) => s.song.bpm).filter((b): b is number => b != null)
+  const songRows = songs.filter((s) => s.song_id !== null)
+  const totalDuration = songRows.reduce((sum, s) => sum + (s.song?.duration_seconds ?? 0), 0)
+  const bpms = songRows.map((s) => s.song?.bpm).filter((b): b is number => b != null)
   const songIdsInSet = new Set(songs.map((s) => s.song_id))
   const availableSongs = allSongs.filter((s) => !songIdsInSet.has(s.id))
 
@@ -56,7 +67,32 @@ export default function SetlistEditor({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{setlist?.name}</h1>
+        {editingName ? (
+          <input
+            ref={nameInputRef}
+            autoFocus
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onBlur={() => {
+              const trimmed = nameValue.trim()
+              if (trimmed && trimmed !== setlist?.name) onUpdateName(trimmed)
+              setEditingName(false)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') nameInputRef.current?.blur()
+              if (e.key === 'Escape') setEditingName(false)
+            }}
+            className="text-xl font-semibold bg-transparent border-b-2 border-[var(--color-accent)] outline-none w-full max-w-xs"
+          />
+        ) : (
+          <h1
+            className="text-xl font-semibold cursor-pointer hover:text-[var(--color-accent)] print:cursor-default"
+            title="Click to rename"
+            onClick={() => { setNameValue(setlist?.name ?? ''); setEditingName(true) }}
+          >
+            {setlist?.name}
+          </h1>
+        )}
         <div className="flex items-center gap-2 print:hidden">
           {!adding && (
             <Button onClick={() => setAdding(true)} disabled={availableSongs.length === 0}>
@@ -113,9 +149,13 @@ export default function SetlistEditor({
                 showDropHint ? 'outline outline-2 outline-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-2' : ''
               }`}
             >
-              {songs.map((item) => (
-                <DraggableRow key={item.id} item={item} onRemove={removeSong} />
-              ))}
+              {songs.map((item) =>
+                item.song_id === null ? (
+                  <BreakRow key={item.id} item={item} onRemove={removeSong} onUpdateLabel={updateBreakLabel} />
+                ) : (
+                  <DraggableRow key={item.id} item={item as SongRow} onRemove={removeSong} />
+                )
+              )}
             </div>
           </SortableContext>
         )}
@@ -123,7 +163,7 @@ export default function SetlistEditor({
 
       {songs.length > 0 && (
         <div className="sticky bottom-0 flex items-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-text-secondary)] print:static">
-          <span>{songs.length} song{songs.length !== 1 ? 's' : ''}</span>
+          <span>{songRows.length} song{songRows.length !== 1 ? 's' : ''}</span>
           {totalDuration > 0 && <span>{formatDuration(totalDuration)} total</span>}
           {bpmRange(bpms) && <span>{bpmRange(bpms)}</span>}
         </div>

@@ -38,5 +38,11 @@ export function useSetlists() {
     }
   }
 
-  return { setlists, loading, error, createSetlist, updateSetlist, deleteSetlist }
+  const duplicateSetlist = async (id: string) => {
+    const copy = await api.duplicateSetlist(id)
+    setSetlists((prev) => [copy, ...prev])
+    return copy
+  }
+
+  return { setlists, loading, error, createSetlist, updateSetlist, deleteSetlist, duplicateSetlist }
 }

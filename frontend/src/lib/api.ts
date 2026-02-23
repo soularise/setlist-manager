@@ -55,12 +55,17 @@ export const api = {
   updateSetlist: (id: string, data: Partial<SetlistCreate>) =>
     request<Setlist>('PUT', `/api/setlists/${id}`, data),
   deleteSetlist: (id: string) => request<void>('DELETE', `/api/setlists/${id}`),
+  duplicateSetlist: (id: string) => request<Setlist>('POST', `/api/setlists/${id}/duplicate`),
 
   // Setlist songs
   getSetlistSongs: (setlistId: string) =>
     request<SetlistSongWithSong[]>('GET', `/api/setlists/${setlistId}/songs`),
   addSongToSetlist: (setlistId: string, data: SetlistSongAdd) =>
     request<SetlistSongWithSong>('POST', `/api/setlists/${setlistId}/songs`, data),
+  addBreakToSetlist: (setlistId: string, data: { position: number; break_label: string }) =>
+    request<SetlistSongWithSong>('POST', `/api/setlists/${setlistId}/breaks`, data),
+  updateBreakLabel: (setlistId: string, setlistSongId: string, label: string) =>
+    request<SetlistSongWithSong>('PATCH', `/api/setlists/${setlistId}/songs/${setlistSongId}/label`, { break_label: label }),
   removeSongFromSetlist: (setlistId: string, setlistSongId: string) =>
     request<void>('DELETE', `/api/setlists/${setlistId}/songs/${setlistSongId}`),
   reorderSetlistSongs: (setlistId: string, items: ReorderItem[]) =>

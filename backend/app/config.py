@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     supabase_anon_key: str
     supabase_service_key: str
     supabase_jwt_secret: str
-    allowed_origin: str = "http://localhost:5173"
+    allowed_origins: str = "http://localhost:5173"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
