@@ -52,7 +52,7 @@ function SetlistDetailContent({ id }: { id: string }) {
         <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-[var(--color-border)] print:hidden">
           <div className="border-b border-[var(--color-border)] px-4 py-3">
             <Link
-              to="/"
+              to="/setlists"
               className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
             >
               ← Setlists
@@ -70,7 +70,7 @@ function SetlistDetailContent({ id }: { id: string }) {
         {/* Right panel — setlist editor */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           <Link
-            to="/"
+            to="/setlists"
             className="md:hidden mb-4 inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] print:hidden"
           >
             ← Back to setlists

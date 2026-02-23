@@ -1,7 +1,7 @@
+import { Pencil, Trash2 } from 'lucide-react'
 import type { Song } from '@/types'
 import { formatDuration } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
-import Button from '@/components/ui/Button'
 
 interface Props {
   song: Song
@@ -11,9 +11,9 @@ interface Props {
 
 export default function SongCard({ song, onEdit, onDelete }: Props) {
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
+    <div className="flex items-center gap-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 shadow-sm dark:shadow-none">
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{song.title}</p>
+        <p className="gradient-text truncate font-medium">{song.title}</p>
         {song.artist && (
           <p className="truncate text-sm text-[var(--color-text-secondary)]">{song.artist}</p>
         )}
@@ -23,16 +23,20 @@ export default function SongCard({ song, onEdit, onDelete }: Props) {
         {song.duration_seconds != null && (
           <Badge>{formatDuration(song.duration_seconds)}</Badge>
         )}
-        <Button variant="ghost" className="px-2 py-1 text-xs" onClick={() => onEdit(song)}>
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          className="px-2 py-1 text-xs"
-          onClick={() => onDelete(song.id)}
+        <button
+          className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors"
+          onClick={() => onEdit(song)}
+          aria-label={`Edit ${song.title}`}
         >
-          Delete
-        </Button>
+          <Pencil size={15} />
+        </button>
+        <button
+          className="p-1 text-[var(--color-text-secondary)] hover:text-red-500 transition-colors"
+          onClick={() => onDelete(song.id)}
+          aria-label={`Delete ${song.title}`}
+        >
+          <Trash2 size={15} />
+        </button>
       </div>
     </div>
   )

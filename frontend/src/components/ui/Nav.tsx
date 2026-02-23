@@ -14,22 +14,35 @@ export default function Nav() {
   }
 
   return (
-    <nav className="flex h-14 items-center justify-between border-b border-[var(--color-border)] px-4">
+    <nav className="relative flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 shadow-sm dark:shadow-none">
+      {/* Gradient accent line along the top */}
+      <div className="gradient-bg absolute inset-x-0 top-0 h-0.5" />
+
       <div className="flex items-center gap-6">
-        <Link to="/" className="font-semibold tracking-tight">
+        <Link to="/" className="gradient-text font-bold tracking-tight text-base">
           Setlist Manager
         </Link>
-        <Link to="/songs" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
+        <Link
+          to="/setlists"
+          className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
+        >
+          Setlists
+        </Link>
+        <Link
+          to="/songs"
+          className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
+        >
           Songs
         </Link>
       </div>
+
       <div className="flex items-center gap-3">
         <Link to="/profile" aria-label="Profile">
           <Avatar name={profile?.display_name} src={profile?.avatar_url} size={32} />
         </Link>
         <button
           onClick={handleSignOut}
-          className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+          className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
         >
           Sign out
         </button>

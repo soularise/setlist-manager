@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Trash2 } from 'lucide-react'
 import type { SetlistSongWithSong } from '@/types'
-import Button from '@/components/ui/Button'
 
 interface Props {
   item: SetlistSongWithSong
@@ -36,7 +36,7 @@ export default function BreakRow({ item, onRemove, onUpdateLabel }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="setlist-song-row flex items-center gap-3 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-surface-hover)] px-3 py-2"
+      className="setlist-song-row flex items-center gap-3 rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface-hover)] px-3 py-2"
     >
       <button
         {...attributes}
@@ -72,14 +72,13 @@ export default function BreakRow({ item, onRemove, onUpdateLabel }: Props) {
         )}
       </div>
 
-      <Button
-        variant="ghost"
-        className="print:hidden px-2 py-1 text-xs text-red-500 hover:text-red-600"
+      <button
+        className="print:hidden p-1 text-[var(--color-text-secondary)] hover:text-red-500 transition-colors"
         onClick={() => onRemove(item.id)}
         aria-label="Remove break"
       >
-        Remove
-      </Button>
+        <Trash2 size={15} />
+      </button>
     </div>
   )
 }

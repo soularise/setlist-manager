@@ -1,24 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #f9fafb;
+  --color-bg: #f0f5fb;
   --color-surface: #ffffff;
-  --color-surface-hover: #f3f4f6;
-  --color-border: #e5e7eb;
-  --color-text: #111827;
-  --color-text-secondary: #6b7280;
-  --color-accent: #6366f1;
+  --color-surface-hover: #e8f0f9;
+  --color-border: #c5d8ec;
+  --color-text: #0a1929;
+  --color-text-secondary: #5a7a95;
+  --color-accent: #3e36db;
+  --color-accent-2: #0090ff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0f0f11;
-    --color-surface: #1a1a1e;
-    --color-surface-hover: #26262c;
-    --color-border: #2e2e36;
-    --color-text: #f3f4f6;
-    --color-text-secondary: #9ca3af;
-    --color-accent: #818cf8;
+    --color-bg: #06152b;
+    --color-surface: #0c1f3a;
+    --color-surface-hover: #112845;
+    --color-border: #1e3d63;
+    --color-text: #e7edf5;
+    --color-text-secondary: #809fb8;
+    --color-accent: #6e6ae8;
+    --color-accent-2: #0090ff;
   }
 }
 
@@ -33,11 +35,29 @@ body {
   box-sizing: border-box;
 }
 
+/* Gradient utilities — used for primary buttons, nav accent, logo text */
+.gradient-bg {
+  background: linear-gradient(135deg, #3e36db 0%, #0090ff 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 @page {
   margin: 2cm;
 }
 
 @media print {
+  .gradient-text {
+    -webkit-text-fill-color: black;
+    background: none;
+    color: black;
+  }
+
   body {
     background: white !important;
     color: black !important;

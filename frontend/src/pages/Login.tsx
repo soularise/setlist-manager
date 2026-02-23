@@ -38,25 +38,31 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold">Setlist Manager</h1>
-
-        <div className="mb-6 flex rounded-lg border border-[var(--color-border)] p-1">
-          {(['signin', 'signup'] as Mode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-colors ${
-                mode === m
-                  ? 'bg-[var(--color-accent)] text-white'
-                  : 'text-[var(--color-text-secondary)]'
-              }`}
-            >
-              {m === 'signin' ? 'Sign in' : 'Create account'}
-            </button>
-          ))}
+        <div className="mb-8 text-center">
+          <h1 className="gradient-text text-3xl font-bold">Setlist Manager</h1>
+          <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
+            {mode === 'signin' ? 'Welcome back' : 'Create your account'}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-xl dark:shadow-none">
+          <div className="mb-6 flex rounded-lg border border-[var(--color-border)] p-1">
+            {(['signin', 'signup'] as Mode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-all ${
+                  mode === m
+                    ? 'gradient-bg text-white shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]'
+                }`}
+              >
+                {m === 'signin' ? 'Sign in' : 'Create account'}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {mode === 'signup' && (
             <Input
               label="Display name"
@@ -84,7 +90,8 @@ export default function Login() {
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Loading…' : mode === 'signin' ? 'Sign in' : 'Create account'}
           </Button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   )

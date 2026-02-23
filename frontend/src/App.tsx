@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth'
 import Nav from '@/components/ui/Nav'
 import AuthCallback from '@/pages/AuthCallback'
 import Dashboard from '@/pages/Dashboard'
+import Home from '@/pages/Home'
 import Login from '@/pages/Login'
 import Profile from '@/pages/Profile'
 import SetlistDetail from '@/pages/SetlistDetail'
@@ -28,6 +29,14 @@ export default function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route
           path="/"
+          element={
+            <ProtectedLayout>
+              <Home />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/setlists"
           element={
             <ProtectedLayout>
               <Dashboard />

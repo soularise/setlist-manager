@@ -23,14 +23,14 @@ export default function DraggableSongItem({ song, inSet }: Props) {
       style={style}
       {...(!inSet ? { ...attributes, ...listeners } : {})}
       className={[
-        'flex flex-col rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm select-none transition-colors',
+        'flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm select-none transition-colors',
         inSet
           ? 'opacity-40 cursor-default'
           : 'cursor-grab hover:bg-[var(--color-surface-hover)] active:cursor-grabbing',
         isDragging ? 'opacity-30' : '',
       ].join(' ')}
     >
-      <span className="truncate font-medium">{song.title}</span>
+      <span className="gradient-text truncate font-medium">{song.title}</span>
       {song.artist && (
         <span className="truncate text-xs text-[var(--color-text-secondary)]">{song.artist}</span>
       )}

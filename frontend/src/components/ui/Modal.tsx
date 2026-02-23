@@ -22,14 +22,14 @@ export default function Modal({ open, onClose, title, children }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === overlayRef.current && onClose()}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="w-full max-w-md rounded-xl bg-[var(--color-surface)] p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-2xl dark:shadow-none"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 id="modal-title" className="text-lg font-semibold">

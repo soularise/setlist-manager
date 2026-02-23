@@ -69,7 +69,7 @@ def add_break(setlist_id: str, body: BreakCreate, auth: AuthContext = Depends(ge
 
 @router.patch("/{setlist_id}/songs/{setlist_song_id}/label", response_model=SetlistSongResponse)
 def update_break_label(
-    _setlist_id: str,
+    setlist_id: str,
     setlist_song_id: str,
     body: BreakLabelUpdate,
     auth: AuthContext = Depends(get_auth),
