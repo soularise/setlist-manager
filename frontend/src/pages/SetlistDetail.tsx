@@ -15,7 +15,7 @@ import SongLibraryPanel from '@/components/setlists/SongLibraryPanel'
 
 function SetlistDetailContent({ id }: { id: string }) {
   const { songs: allSongs, loading: songsLoading } = useSongs()
-  const { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, updateSetlistName, removeSong, reorderSongs } = useSetlist(id)
+  const { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, updateSetlist, removeSong, reorderSongs } = useSetlist(id)
 
   const sensors = useSensors(useSensor(PointerSensor))
   const songIdsInSet = new Set(songs.map((s) => s.song_id).filter((id): id is string => id !== null))
@@ -26,14 +26,14 @@ function SetlistDetailContent({ id }: { id: string }) {
 
     if (activeIdStr === 'lib-break') {
       if (!over) return
-      await addBreak().catch(() => {})
+      await addBreak().catch(() => { })
       return
     }
 
     if (activeIdStr.startsWith('lib-')) {
       if (!over) return
       const songId = activeIdStr.slice(4)
-      await addSong(songId).catch(() => {})
+      await addSong(songId).catch(() => { })
       return
     }
 
@@ -85,7 +85,8 @@ function SetlistDetailContent({ id }: { id: string }) {
               addSong={addSong}
               removeSong={removeSong}
               updateBreakLabel={updateBreakLabel}
-              onUpdateName={updateSetlistName}
+              onUpdateName={(name) => updateSetlist({ name })}
+              onUpdateDescription={(description) => updateSetlist({ description })}
             />
           </div>
         </div>

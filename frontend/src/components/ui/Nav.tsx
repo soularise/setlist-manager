@@ -19,8 +19,9 @@ export default function Nav() {
       <div className="gradient-bg absolute inset-x-0 top-0 h-0.5" />
 
       <div className="flex items-center gap-6">
-        <Link to="/" className="gradient-text font-bold tracking-tight text-base">
-          Setlist Manager
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-md" />
+          <span className="text-lg font-bold tracking-tight text-white">Setlist Manager</span>
         </Link>
         <Link
           to="/setlists"

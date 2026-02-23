@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
-import type { ReorderItem, Setlist, SetlistSongWithSong } from '@/types'
+import type { ReorderItem, Setlist, SetlistCreate, SetlistSongWithSong } from '@/types'
 
 export function useSetlist(setlistId: string) {
   const [setlist, setSetlist] = useState<Setlist | null>(null)
@@ -82,10 +82,10 @@ export function useSetlist(setlistId: string) {
     await api.updateBreakLabel(setlistId, setlistSongId, label)
   }
 
-  const updateSetlistName = async (name: string) => {
-    const updated = await api.updateSetlist(setlistId, { name })
+  const updateSetlist = async (data: Partial<SetlistCreate>) => {
+    const updated = await api.updateSetlist(setlistId, data)
     setSetlist(updated)
   }
 
-  return { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, removeSong, reorderSongs, updateSetlistName }
+  return { setlist, songs, loading, error, addSong, addBreak, updateBreakLabel, removeSong, reorderSongs, updateSetlist }
 }

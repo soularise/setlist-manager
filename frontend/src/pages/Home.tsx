@@ -14,20 +14,25 @@ function StatCard({
   label,
   icon,
   loading,
+  href,
 }: {
   value: number
   label: string
   icon: React.ReactNode
   loading: boolean
+  href: string
 }) {
   return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm dark:shadow-none">
+    <Link
+      to={href}
+      className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm dark:shadow-none transition-colors hover:bg-[var(--color-surface-hover)]"
+    >
       <div className="gradient-bg mb-3 flex h-10 w-10 items-center justify-center rounded-lg text-white">
         {icon}
       </div>
       <div className="text-3xl font-bold">{loading ? '—' : value}</div>
       <div className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{label}</div>
-    </div>
+    </Link>
   )
 }
 
@@ -71,12 +76,14 @@ export default function Home() {
           label="Setlists"
           icon={<ListMusic size={18} />}
           loading={setlistsLoading}
+          href="/setlists"
         />
         <StatCard
           value={songs.length}
           label="Songs"
           icon={<Music size={18} />}
           loading={songsLoading}
+          href="/songs"
         />
       </div>
 

@@ -19,6 +19,7 @@ interface Props {
   removeSong: (id: string) => Promise<void>
   updateBreakLabel: (id: string, label: string) => void
   onUpdateName: (name: string) => Promise<void>
+  onUpdateDescription: (description: string) => Promise<void>
 }
 
 export default function SetlistEditor({
@@ -31,6 +32,7 @@ export default function SetlistEditor({
   removeSong,
   updateBreakLabel,
   onUpdateName,
+  onUpdateDescription,
 }: Props) {
   const [adding, setAdding] = useState(false)
   const [selectedSongId, setSelectedSongId] = useState('')
@@ -38,6 +40,9 @@ export default function SetlistEditor({
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState('')
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const [editingDesc, setEditingDesc] = useState(false)
+  const [descValue, setDescValue] = useState('')
+  const descRef = useRef<HTMLTextAreaElement>(null)
 
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: 'setlist-container' })
   const { active } = useDndContext()
@@ -105,6 +110,36 @@ export default function SetlistEditor({
         </div>
       </div>
 
+      {/* Description */}
+      <div className="-mt-2">
+        {editingDesc ? (
+          <textarea
+            ref={descRef}
+            autoFocus
+            value={descValue}
+            onChange={(e) => setDescValue(e.target.value)}
+            onBlur={() => {
+              const trimmed = descValue.trim()
+              if (trimmed !== (setlist?.description ?? '')) onUpdateDescription(trimmed)
+              setEditingDesc(false)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') setEditingDesc(false)
+            }}
+            rows={2}
+            className="w-full text-sm bg-transparent border-b-2 border-[var(--color-accent)] outline-none resize-none text-[var(--color-text-secondary)]"
+          />
+        ) : (
+          <p
+            className="text-sm text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text)] transition-colors print:cursor-default"
+            title="Click to edit description"
+            onClick={() => { setDescValue(setlist?.description ?? ''); setEditingDesc(true) }}
+          >
+            {setlist?.description || <span className="italic print:hidden">Add a description…</span>}
+          </p>
+        )}
+      </div>
+
       {adding && (
         <div className="print:hidden">
           <div className="flex gap-2">
@@ -130,11 +165,10 @@ export default function SetlistEditor({
       <div ref={setDropRef}>
         {songs.length === 0 ? (
           <div
-            className={`flex items-center justify-center rounded-lg border-2 border-dashed py-16 text-center transition-colors ${
-              showDropHint
+            className={`flex items-center justify-center rounded-lg border-2 border-dashed py-16 text-center transition-colors ${showDropHint
                 ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/5'
                 : 'border-[var(--color-border)]'
-            }`}
+              }`}
           >
             <p className="text-sm text-[var(--color-text-secondary)]">
               {showDropHint
@@ -145,9 +179,8 @@ export default function SetlistEditor({
         ) : (
           <SortableContext items={songs.map((s) => s.id)} strategy={verticalListSortingStrategy}>
             <div
-              className={`setlist-songs-list flex flex-col gap-2 rounded-lg transition-colors ${
-                showDropHint ? 'outline outline-2 outline-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-2' : ''
-              }`}
+              className={`setlist-songs-list flex flex-col gap-2 rounded-lg transition-colors ${showDropHint ? 'outline outline-2 outline-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 p-2' : ''
+                }`}
             >
               {songs.map((item) =>
                 item.song_id === null ? (
