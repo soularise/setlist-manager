@@ -25,13 +25,13 @@ export default function DraggableRow({ item, onRemove }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+      className="setlist-song-row flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
     >
       <button
         {...attributes}
         {...listeners}
         aria-label="Drag to reorder"
-        className="cursor-grab touch-none text-[var(--color-text-secondary)] active:cursor-grabbing"
+        className="print:hidden cursor-grab touch-none text-[var(--color-text-secondary)] active:cursor-grabbing"
       >
         ⠿
       </button>
@@ -48,7 +48,7 @@ export default function DraggableRow({ item, onRemove }: Props) {
         )}
         <Button
           variant="ghost"
-          className="px-2 py-1 text-xs text-red-500 hover:text-red-600"
+          className="print:hidden px-2 py-1 text-xs text-red-500 hover:text-red-600"
           onClick={() => onRemove(item.id)}
           aria-label={`Remove ${item.song.title}`}
         >

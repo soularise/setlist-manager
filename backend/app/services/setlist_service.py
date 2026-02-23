@@ -52,7 +52,16 @@ def add_song_to_setlist(setlist_id: str, data: SetlistSongCreate, client: Client
     payload = data.model_dump(exclude_none=True)
     payload["setlist_id"] = setlist_id
     result = client.table("setlist_songs").insert(payload).execute()
-    return result.data[0]
+    inserted_id = result.data[0]["id"]
+    # Fetch back with song join so caller gets full SetlistSongWithSong shape
+    joined = (
+        client.table("setlist_songs")
+        .select("*, song:songs(*)")
+        .eq("id", inserted_id)
+        .single()
+        .execute()
+    )
+    return joined.data
 
 
 def remove_song_from_setlist(setlist_song_id: str, client: Client) -> None:

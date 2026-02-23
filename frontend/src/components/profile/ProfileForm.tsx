@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Profile, ProfileUpdate } from '@/types'
+import Avatar from '@/components/profile/Avatar'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
@@ -19,7 +20,11 @@ export default function ProfileForm({ profile, onSave }: Props) {
     e.preventDefault()
     setSaving(true)
     try {
-      await onSave({ display_name: displayName || undefined, bio: bio || undefined, avatar_url: avatarUrl || undefined })
+      await onSave({
+        display_name: displayName || undefined,
+        bio: bio || undefined,
+        avatar_url: avatarUrl || undefined,
+      })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } finally {
@@ -45,13 +50,20 @@ export default function ProfileForm({ profile, onSave }: Props) {
           className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--color-accent)] resize-none"
         />
       </div>
-      <Input
-        label="Avatar URL"
-        value={avatarUrl}
-        onChange={(e) => setAvatarUrl(e.target.value)}
-        placeholder="https://..."
-        type="url"
-      />
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-[var(--color-text-secondary)]">Avatar</label>
+        <div className="flex items-center gap-3">
+          <Avatar name={displayName || profile.display_name} src={avatarUrl || undefined} size={48} />
+          <input
+            type="url"
+            value={avatarUrl}
+            onChange={(e) => setAvatarUrl(e.target.value)}
+            placeholder="https://..."
+            className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+          />
+        </div>
+        <p className="text-xs text-[var(--color-text-secondary)]">Paste a URL to any image</p>
+      </div>
       <Button type="submit" disabled={saving}>
         {saved ? 'Saved!' : saving ? 'Saving…' : 'Save changes'}
       </Button>

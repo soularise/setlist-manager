@@ -32,3 +32,38 @@ body {
 * {
   box-sizing: border-box;
 }
+
+@page {
+  margin: 2cm;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  nav {
+    display: none !important;
+  }
+
+  .setlist-songs-list {
+    counter-reset: song-counter;
+  }
+
+  .setlist-song-row {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-color: #d1d5db !important;
+  }
+
+  .setlist-song-row::before {
+    counter-increment: song-counter;
+    content: counter(song-counter) ".";
+    display: inline-block;
+    min-width: 1.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+}

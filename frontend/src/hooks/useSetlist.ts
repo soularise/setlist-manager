@@ -23,7 +23,14 @@ export function useSetlist(setlistId: string) {
       song_id: songId,
       position: songs.length,
     })
-    setSongs((prev) => [...prev, entry])
+    if (entry.song) {
+      // Backend returned the full joined row — use it directly
+      setSongs((prev) => [...prev, entry])
+    } else {
+      // Fallback: refetch to get the joined song data
+      const updated = await api.getSetlistSongs(setlistId)
+      setSongs([...updated].sort((a, b) => a.position - b.position))
+    }
     return entry
   }
 
