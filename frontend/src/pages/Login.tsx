@@ -26,7 +26,17 @@ export default function Login() {
           ? await signIn(email, password)
           : await signUp(email, password, displayName)
       if (result.error) {
-        setError(result.error.message)
+        // Sanitize Supabase error messages to avoid leaking internal details
+        const msg = result.error.message ?? ''
+        if (msg.toLowerCase().includes('invalid login credentials')) {
+          setError('Incorrect email or password.')
+        } else if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+          setError('An account with this email already exists.')
+        } else if (msg.toLowerCase().includes('password')) {
+          setError('Password does not meet requirements (minimum 12 characters).')
+        } else {
+          setError('Something went wrong. Please try again.')
+        }
       } else {
         navigate('/')
       }
@@ -69,6 +79,8 @@ export default function Login() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               required
+              minLength={1}
+              maxLength={100}
             />
           )}
           <Input
@@ -77,6 +89,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            maxLength={254}
           />
           <Input
             label="Password"
@@ -84,7 +97,8 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            minLength={6}
+            minLength={12}
+            maxLength={128}
           />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full">

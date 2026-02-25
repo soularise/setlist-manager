@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 
 import httpx
@@ -11,17 +12,19 @@ from .db.supabase import get_user_client
 
 security = HTTPBearer()
 
-# Module-level JWKS cache — fetched once per process
-_jwks_cache: dict | None = None
+# JWKS cache with 1-hour TTL so key rotations are picked up promptly
+_jwks_state: dict = {"cache": None, "time": 0.0}
+_JWKS_TTL = 3600.0
 
 
 def _get_jwks(supabase_url: str) -> dict:
-    global _jwks_cache
-    if _jwks_cache is None:
+    now = time.monotonic()
+    if _jwks_state["cache"] is None or now - _jwks_state["time"] > _JWKS_TTL:
         resp = httpx.get(f"{supabase_url}/auth/v1/.well-known/jwks.json", timeout=5.0)
         resp.raise_for_status()
-        _jwks_cache = resp.json()
-    return _jwks_cache
+        _jwks_state["cache"] = resp.json()
+        _jwks_state["time"] = now
+    return _jwks_state["cache"]
 
 
 def _decode_token(token: str, settings: Settings) -> dict:
