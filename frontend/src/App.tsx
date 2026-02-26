@@ -1,5 +1,7 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabaseClient'
 import Nav from '@/components/ui/Nav'
 import AuthCallback from '@/pages/AuthCallback'
 import ResetPassword from '@/pages/ResetPassword'
@@ -9,6 +11,19 @@ import Login from '@/pages/Login'
 import Profile from '@/pages/Profile'
 import SetlistDetail from '@/pages/SetlistDetail'
 import Songs from '@/pages/Songs'
+
+function RecoveryListener() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        navigate('/reset-password', { replace: true })
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [navigate])
+  return null
+}
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth()
@@ -25,6 +40,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <RecoveryListener />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
