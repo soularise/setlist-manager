@@ -21,7 +21,7 @@ export default function Nav() {
       <div className="flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2">
           <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-md" />
-          <span className="text-lg font-bold tracking-tight text-white">Setlist Manager</span>
+          <span className="hidden text-lg font-bold tracking-tight text-white sm:inline">Setlist Manager</span>
         </Link>
         <Link
           to="/setlists"
