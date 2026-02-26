@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabaseClient'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
-type Mode = 'signin' | 'signup'
+type Mode = 'signin' | 'signup' | 'forgot'
 
 export default function Login() {
   const [mode, setMode] = useState<Mode>('signin')
@@ -12,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
@@ -19,14 +21,26 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setSuccess(null)
     setLoading(true)
     try {
+      if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        })
+        if (error) {
+          setError(error.message)
+        } else {
+          setSuccess('Check your email for a password reset link.')
+        }
+        return
+      }
+
       const result =
         mode === 'signin'
           ? await signIn(email, password)
           : await signUp(email, password, displayName)
       if (result.error) {
-        // Sanitize Supabase error messages to avoid leaking internal details
         const msg = result.error.message ?? ''
         if (msg.toLowerCase().includes('invalid login credentials')) {
           setError('Incorrect email or password.')
@@ -51,59 +65,82 @@ export default function Login() {
         <div className="mb-8 text-center">
           <h1 className="gradient-text text-3xl font-bold">Setlist Manager</h1>
           <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
-            {mode === 'signin' ? 'Welcome back' : 'Create your account'}
+            {mode === 'forgot' ? 'Reset your password' : mode === 'signin' ? 'Welcome back' : 'Create your account'}
           </p>
         </div>
 
         <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-xl dark:shadow-none">
-          <div className="mb-6 flex rounded-lg border border-[var(--color-border)] p-1">
-            {(['signin', 'signup'] as Mode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-all ${
-                  mode === m
-                    ? 'gradient-bg text-white shadow-sm'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]'
-                }`}
-              >
-                {m === 'signin' ? 'Sign in' : 'Create account'}
-              </button>
-            ))}
-          </div>
+          {mode !== 'forgot' && (
+            <div className="mb-6 flex rounded-lg border border-[var(--color-border)] p-1">
+              {(['signin', 'signup'] as Mode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={`flex-1 rounded-md py-1.5 text-sm font-medium transition-all ${
+                    mode === m
+                      ? 'gradient-bg text-white shadow-sm'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text)]'
+                  }`}
+                >
+                  {m === 'signin' ? 'Sign in' : 'Create account'}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {mode === 'signup' && (
+            {mode === 'signup' && (
+              <Input
+                label="Display name"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                minLength={1}
+                maxLength={100}
+              />
+            )}
             <Input
-              label="Display name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
-              minLength={1}
-              maxLength={100}
+              maxLength={254}
             />
-          )}
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            maxLength={254}
-          />
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={12}
-            maxLength={128}
-          />
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Loading…' : mode === 'signin' ? 'Sign in' : 'Create account'}
-          </Button>
+            {mode !== 'forgot' && (
+              <Input
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={12}
+                maxLength={128}
+              />
+            )}
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {success && <p className="text-sm text-green-500">{success}</p>}
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? 'Loading…' : mode === 'forgot' ? 'Send reset link' : mode === 'signin' ? 'Sign in' : 'Create account'}
+            </Button>
+            {mode === 'signin' && (
+              <button
+                type="button"
+                onClick={() => { setMode('forgot'); setError(null); setSuccess(null) }}
+                className="text-center text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+              >
+                Forgot password?
+              </button>
+            )}
+            {mode === 'forgot' && (
+              <button
+                type="button"
+                onClick={() => { setMode('signin'); setError(null); setSuccess(null) }}
+                className="text-center text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+              >
+                Back to sign in
+              </button>
+            )}
           </form>
         </div>
       </div>
